@@ -6,13 +6,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial, sans-serif; background:#000; color:#fff; text-align:center; margin:0; padding:20px; }
-    h1 { color:#ff00ff; text-shadow:0 0 10px #ff00ff, 0 0 20px #ff00ff; font-size:2em; }
+    h1 {
+      color: #00ffcc; /* Título verde água neon */
+      text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+      font-size: 2em;
+    }
     .circle { font-size:1.2em; margin:20px auto 5px auto; padding:40px; border-radius:50%; width:180px; height:180px; display:flex; align-items:center; justify-content:center; background:#111; transition: all 0.3s ease; }
     .azul { color:#0ff; border:3px solid #0ff; box-shadow:0 0 20px #0ff, 0 0 40px #0ff; text-shadow:0 0 10px #0ff; }
     .vermelho { color:#f00; border:3px solid #f00; box-shadow:0 0 20px #f00, 0 0 40px #f00; text-shadow:0 0 10px #f00; }
     .blocked { background:#222; color:#ffcc00; padding:10px; margin:15px auto; border-radius:5px; width:90%; font-size:0.9em; text-shadow:0 0 10px #ffcc00; }
-    button { padding:12px 20px; background:#ff00aa; color:#fff; border:none; border-radius:5px; cursor:pointer; margin-top:15px; font-size:1em; width:80%; max-width:300px; box-shadow:0 0 15px #ff00aa, 0 0 30px #ff00aa; text-shadow:0 0 5px #fff; }
-    button:hover { background:#cc0088; box-shadow:0 0 20px #cc0088, 0 0 40px #cc0088; }
+    /* Botão Fazer Previsão */
+    #preverBtn {
+      background:#ffcc00; /* amarelo neon */
+      color:#000;
+      box-shadow:0 0 15px #ffcc00, 0 0 30px #ffcc00;
+    }
+    #preverBtn:hover {
+      background:#e6b800;
+      box-shadow:0 0 20px #e6b800, 0 0 40px #e6b800;
+    }
+    /* Botão Conectar o Bot */
+    #openLogin {
+      background:#00ff00; /* verde neon */
+      color:#000;
+      box-shadow:0 0 15px #00ff00, 0 0 30px #00ff00;
+    }
+    #openLogin:hover {
+      background:#00cc00;
+      box-shadow:0 0 20px #00cc00, 0 0 40px #00cc00;
+    }
+    /* Botão Conectar Agora (login) */
+    #loginForm button {
+      background:#ff0066; /* rosa neon */
+      color:#fff;
+      box-shadow:0 0 15px #ff0066, 0 0 30px #ff0066;
+    }
+    #loginForm button:hover {
+      background:#cc0055;
+      box-shadow:0 0 20px #cc0055, 0 0 40px #cc0055;
+    }
     input { margin:8px; padding:10px; width:80%; max-width:300px; font-size:1em; background:#111; color:#0ff; border:1px solid #0ff; border-radius:5px; box-shadow:0 0 10px #0ff; }
     input::placeholder { color:#888; }
     #loginScreen { display:none; }
